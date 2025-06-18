@@ -98,11 +98,33 @@ module "nsg" {
   }
 }
 
-module "dev" {
+################################################################################
+#  Load-balancer module call
+################################################################################
+module "lb" {
+  # root of your module that contains azurerm_lb.this
   source = "../../"
 
-  name = "Libre DevOps"
+  lbs = [
+    {
+      rg_name  = module.rg.rg_name
+      location = module.rg.rg_location
+      tags     = module.rg.rg_tags
+
+      name = "lb-${var.short}-${var.loc}-${var.env}-04"
+
+      frontend_ip_configuration = [
+        {
+          subnet_id = module.network.subnets_ids[local.dev_subnet_name]
+          zones     = ["1"]
+        }
+      ]
+
+      backend_address_pools = [
+        {
+          virtual_network_id = module.network.vnet_id
+        }
+      ]
+    }
+  ]
 }
-
-
-

@@ -99,20 +99,40 @@ module "nsg" {
   }
 }
 
-module "dev" {
+################################################################################
+#  Load-balancer module call
+################################################################################
+module "lb" {
+  # root of your module that contains azurerm_lb.this
   source = "../../"
 
-  name = "Libre DevOps"
+  lbs = [
+    {
+      rg_name  = module.rg.rg_name
+      location = module.rg.rg_location
+      tags     = module.rg.rg_tags
+
+      name = "lb-${var.short}-${var.loc}-${var.env}-04"
+
+      frontend_ip_configuration = [
+        {
+          subnet_id = module.network.subnets_ids[local.dev_subnet_name]
+          zones     = ["1"]
+        }
+      ]
+
+      backend_address_pools = [
+        {
+          virtual_network_id = module.network.vnet_id
+        }
+      ]
+    }
+  ]
 }
-
-
-
 ```
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.28.0 |
+No requirements.
 
 ## Providers
 
@@ -125,7 +145,7 @@ module "dev" {
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_client_ip"></a> [client\_ip](#module\_client\_ip) | libre-devops/ip-address/external | n/a |
-| <a name="module_dev"></a> [dev](#module\_dev) | ../../ | n/a |
+| <a name="module_lb"></a> [lb](#module\_lb) | ../../ | n/a |
 | <a name="module_network"></a> [network](#module\_network) | libre-devops/network/azurerm | n/a |
 | <a name="module_nsg"></a> [nsg](#module\_nsg) | libre-devops/nsg/azurerm | n/a |
 | <a name="module_rg"></a> [rg](#module\_rg) | libre-devops/rg/azurerm | n/a |
