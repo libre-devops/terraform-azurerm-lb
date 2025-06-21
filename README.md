@@ -140,9 +140,6 @@ resource "azurerm_lb_outbound_rule" "this" {
   }
 }
 
-###############################################################################
-# LB-RULE  ── null-safe backend_address_pool_ids
-###############################################################################
 resource "azurerm_lb_rule" "this" {
   for_each        = local.lb_rules_map
   loadbalancer_id = azurerm_lb.this[each.value.lb_name].id
@@ -156,14 +153,10 @@ resource "azurerm_lb_rule" "this" {
     azurerm_lb.this[each.value.lb_name].frontend_ip_configuration[0].name
   )
 
-  # -------------------------------------------------------------------------
-  #  Build one candidate list, compact() removes any null/empty items
-  # -------------------------------------------------------------------------
   backend_address_pool_ids = compact(concat(
     # 1) caller-supplied list (may be null)
     coalesce(each.value.rule.backend_address_pool_ids, []),
 
-    # 2) explicit “associate_backend_pool_key” pointer
     [
       try(
         azurerm_lb_backend_address_pool.this[
@@ -173,7 +166,6 @@ resource "azurerm_lb_rule" "this" {
       )
     ],
 
-    # 3) fall-back: “first pool that belongs to this LB”
     [
       try(
         values({
@@ -185,9 +177,7 @@ resource "azurerm_lb_rule" "this" {
     ]
   ))
 
-  # -------------------------------------------------------------------------
-  #  Remainder – unchanged
-  # -------------------------------------------------------------------------
+
   probe_id                = try(each.value.rule.probe_id, null)
   enable_floating_ip      = try(each.value.rule.enable_floating_ip, null)
   idle_timeout_in_minutes = try(each.value.rule.idle_timeout_in_minutes, null)
