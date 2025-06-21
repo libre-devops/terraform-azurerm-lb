@@ -125,6 +125,23 @@ module "lb" {
           virtual_network_id = module.network.vnet_id
         }
       ]
+
+      nat_rules = [
+        {
+          frontend_port_start = 50000 # range 50000-50010 →
+          frontend_port_end   = 50010
+          backend_port        = 22
+        },
+      ]
+
+      lb_rules = [
+        {
+          name          = "web-80"
+          protocol      = "Tcp"
+          frontend_port = 80
+          backend_port  = 80
+        },
+      ]
     }
   ]
 }

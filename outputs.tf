@@ -1,3 +1,35 @@
+output "lb_backend_address_pool_backend_ip_configurations" {
+  description = "Map of <lb>_<pool> → list of Backend IP Configuration IDs."
+  value = {
+    for k, v in azurerm_lb_backend_address_pool.this :
+    k => v.backend_ip_configurations
+  }
+}
+
+output "lb_backend_address_pool_inbound_nat_rules" {
+  description = "Map of <lb>_<pool> → list of Inbound NAT Rule IDs."
+  value = {
+    for k, v in azurerm_lb_backend_address_pool.this :
+    k => v.inbound_nat_rules
+  }
+}
+
+output "lb_backend_address_pool_load_balancing_rules" {
+  description = "Map of <lb>_<pool> → list of Load-Balancing Rule IDs."
+  value = {
+    for k, v in azurerm_lb_backend_address_pool.this :
+    k => v.load_balancing_rules
+  }
+}
+
+output "lb_backend_address_pool_outbound_rules" {
+  description = "Map of <lb>_<pool> → list of Outbound Rule IDs."
+  value = {
+    for k, v in azurerm_lb_backend_address_pool.this :
+    k => v.outbound_rules
+  }
+}
+
 output "lb_frontend_ip_configuration" {
   description = <<DESC
 Flattened view of every frontend_ip_configuration on every Load Balancer,
@@ -33,6 +65,16 @@ output "lb_name" {
   value       = { for k, v in azurerm_lb.this : k => v.name }
 }
 
+output "lb_nat_rule_ids" {
+  description = "Map of <lb>_<rule> → NAT-rule ID."
+  value       = { for k, v in azurerm_lb_nat_rule.this : k => v.id }
+}
+
+output "lb_nat_rule_names" {
+  description = "Map of <lb>_<rule> → NAT-rule name."
+  value       = { for k, v in azurerm_lb_nat_rule.this : k => v.name }
+}
+
 output "lb_private_ip_address" {
   description = "First private IP address on each Load Balancer (first frontend config only)."
   value       = { for k, v in azurerm_lb.this : k => v.private_ip_address }
@@ -43,34 +85,12 @@ output "lb_private_ip_addresses" {
   value       = { for k, v in azurerm_lb.this : k => v.private_ip_addresses }
 }
 
-output "lb_backend_address_pool_backend_ip_configurations" {
-  description = "Map of <lb>_<pool> → list of Backend IP Configuration IDs."
-  value       = {
-    for k, v in azurerm_lb_backend_address_pool.this :
-    k => v.backend_ip_configurations
-  }
+output "lb_rule_ids" {
+  description = "Map of <lb>_<ruleIndex> → azurerm_lb_rule ID."
+  value       = { for k, v in azurerm_lb_rule.this : k => v.id }
 }
 
-output "lb_backend_address_pool_load_balancing_rules" {
-  description = "Map of <lb>_<pool> → list of Load-Balancing Rule IDs."
-  value       = {
-    for k, v in azurerm_lb_backend_address_pool.this :
-    k => v.load_balancing_rules
-  }
-}
-
-output "lb_backend_address_pool_inbound_nat_rules" {
-  description = "Map of <lb>_<pool> → list of Inbound NAT Rule IDs."
-  value       = {
-    for k, v in azurerm_lb_backend_address_pool.this :
-    k => v.inbound_nat_rules
-  }
-}
-
-output "lb_backend_address_pool_outbound_rules" {
-  description = "Map of <lb>_<pool> → list of Outbound Rule IDs."
-  value       = {
-    for k, v in azurerm_lb_backend_address_pool.this :
-    k => v.outbound_rules
-  }
+output "lb_rule_names" {
+  description = "Map of <lb>_<ruleIndex> → azurerm_lb_rule name."
+  value       = { for k, v in azurerm_lb_rule.this : k => v.name }
 }

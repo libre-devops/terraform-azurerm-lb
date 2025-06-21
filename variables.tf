@@ -20,27 +20,67 @@ variable "lbs" {
     sku      = optional(string, "Standard")
     sku_tier = optional(string, "Regional")
     backend_address_pools = optional(list(object({
-      name             = optional(string)
+      name               = optional(string)
       virtual_network_id = optional(string)
-      loadbalancer_id = optional(string)
-      synchronous_mode = optional(string)
+      loadbalancer_id    = optional(string)
+      synchronous_mode   = optional(string)
       tunnel_interface = optional(list(object({
         identifier = string
-        type = optional(string)
-        protocol = optional(string)
-        port = number
+        type       = optional(string)
+        protocol   = optional(string)
+        port       = number
       })))
     })))
     nat_pools = optional(list(object({
-      name                            = optional(string)
-      protocol                        = string
-      frontend_port_start             = number
-      frontend_port_end               = number
-      backend_port                    = number
-      frontend_ip_configuration_name  = optional(string)
-      idle_timeout_in_minutes         = optional(number)
-      floating_ip_enabled = optional(bool)
-      tcp_reset_enabled = optional(bool)
+      name                           = optional(string)
+      protocol                       = string
+      frontend_port_start            = number
+      frontend_port_end              = number
+      backend_port                   = number
+      frontend_ip_configuration_name = optional(string)
+      idle_timeout_in_minutes        = optional(number)
+      floating_ip_enabled            = optional(bool)
+      tcp_reset_enabled              = optional(bool)
+    })))
+    nat_rules = optional(list(object({
+      name                           = optional(string)
+      protocol                       = optional(string, "Tcp")
+      frontend_port                  = optional(number)
+      frontend_port_start            = optional(number)
+      frontend_port_end              = optional(number)
+      backend_port                   = number
+      frontend_ip_configuration_name = optional(string)
+      backend_address_pool_id        = optional(string)
+      idle_timeout_in_minutes        = optional(number)
+      enable_tcp_reset               = optional(bool)
+      enable_floating_ip             = optional(bool)
+    })))
+    outbound_rules = optional(list(object({
+      name                       = optional(string)
+      protocol                   = string
+      backend_address_pool_id    = optional(string)
+      associate_backend_pool_key = optional(string)
+      frontend_ip_configuration = optional(list(object({
+        name = string
+      })))
+      enable_tcp_reset         = optional(bool)
+      allocated_outbound_ports = optional(number, 1024)
+      idle_timeout_in_minutes  = optional(number, 4)
+    })))
+    lb_rules = optional(list(object({
+      name                           = optional(string)
+      protocol                       = string
+      frontend_port                  = number
+      backend_port                   = number
+      associate_backend_pool_key     = optional(string)
+      backend_address_pool_ids       = optional(list(string))
+      probe_id                       = optional(string)
+      frontend_ip_configuration_name = optional(string)
+      enable_floating_ip             = optional(bool)
+      idle_timeout_in_minutes        = optional(number)
+      load_distribution              = optional(string)
+      disable_outbound_snat          = optional(bool)
+      enable_tcp_reset               = optional(bool)
     })))
   }))
 }
