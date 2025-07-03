@@ -3,7 +3,10 @@ name: Terraform Free Form
 on:
   workflow_dispatch:
     inputs:
-      terraform-arguement: "init -upgrade"
+      terraform-arguements:
+        description: 'Arguements to run to terraform'
+        required: false
+        default: 'init -upgrade'
 
 
 permissions:
