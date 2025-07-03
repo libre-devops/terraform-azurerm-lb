@@ -37,6 +37,7 @@ jobs:
       - name: Libre DevOps - Run Terraform Free Form for Azure
         uses: libre-devops/terraform-free-form-azure@v1
         with:
+          terraform-code-location: "examples/module-development"
           terraform-commands-json: ${{ inputs.terraform-commands-json }}
           terraform-args-json: |
             {
