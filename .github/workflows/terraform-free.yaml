@@ -3,11 +3,21 @@ name: Terraform Free Form
 on:
   workflow_dispatch:
     inputs:
-      terraform-arguements:
-        description: 'Arguements to run to terraform'
+      terraform-commands-json:
+        description: 'JSON array of Terraform commands to execute'
         required: false
-        default: 'init -upgrade'
+        default: '["init", "plan"]'
+      terraform-args-json:
+        description: 'JSON object mapping commands to their arguments'
+        required: false
+        default: '{"init": "-upgrade", "plan": "-out=tfplan.plan"}'
+      terraform-workspace:
+        description: 'Terraform workspace'
+        required: false
+        default: 'dev'
 
+env:
+  terraform-init-extra-args-json: '["-backend-config=subscription_id=${{ secrets.ARM_BACKEND_SUBSCRIPTION_ID }}", "-backend-config=resource_group_name=${{ secrets.ARM_BACKEND_STORAGE_RG_NAME }}", "-backend-config=storage_account_name=${{ secrets.ARM_BACKEND_STORAGE_ACCOUNT }}", "-backend-config=container_name=${{ secrets.ARM_BACKEND_CONTAINER_NAME }}"]'
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -21,12 +31,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Libre DevOps - Run Terraform Apply for Azure
+        name: "Install terraform"
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Libre DevOps - Run Terraform Free Form for Azure
         uses: libre-devops/terraform-free-form-azure@v1
         with:
-          terraform-arguments: ${{ inputs.terraform-arguements }}
+          terraform-commands-json: ${{ inputs.terraform-commands-json }}
+          terraform-args-json: |
+            {
+              "init": "${{ fromJson(env.terraform-init-extra-args-json)[0] }} ${{ fromJson(env.terraform-init-extra-args-json)[1] }} ${{ fromJson(env.terraform-init-extra-args-json)[2] }} ${{ fromJson(env.terraform-init-extra-args-json)[3] }}",
+              "plan": "-out=tfplan.plan"
+            }
           arm-tenant-id: ${{ secrets.ARM_TENANT_ID }}
           arm-subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           arm-client-id: ${{ secrets.ARM_CLIENT_ID }}
-        env:
-          TENV_AUTO_INSTALL: true
