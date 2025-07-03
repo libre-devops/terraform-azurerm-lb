@@ -1,0 +1,29 @@
+name: Terraform Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      terraform-arguement: "init -upgrade"
+
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+  packages: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Libre DevOps - Run Terraform Apply for Azure
+        uses: libre-devops/terraform-free-form-azure@v1
+        with:
+          terraform-arguements: ${{ inputs.terraform-arguements }}
+          arm-tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          arm-subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          arm-client-id: ${{ secrets.ARM_CLIENT_ID }}
+        env:
+          TENV_AUTO_INSTALL: true
