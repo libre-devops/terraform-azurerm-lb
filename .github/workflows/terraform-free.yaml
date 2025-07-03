@@ -1,4 +1,4 @@
-name: Terraform Build
+name: Terraform Free Form
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
       - name: Libre DevOps - Run Terraform Apply for Azure
         uses: libre-devops/terraform-free-form-azure@v1
         with:
-          terraform-arguements: ${{ inputs.terraform-arguements }}
+          terraform-arguments: ${{ inputs.terraform-arguements }}
           arm-tenant-id: ${{ secrets.ARM_TENANT_ID }}
           arm-subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           arm-client-id: ${{ secrets.ARM_CLIENT_ID }}
