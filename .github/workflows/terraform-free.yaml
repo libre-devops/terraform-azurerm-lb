@@ -3,6 +3,10 @@ name: Terraform Free Form
 on:
   workflow_dispatch:
     inputs:
+      terraform-code-location:
+        description: 'Path to Terraform code'
+        required: false
+        default: 'examples/module-development'
       terraform-commands-json:
         description: 'JSON array of Terraform commands to execute'
         required: false
@@ -37,7 +41,7 @@ jobs:
       - name: Libre DevOps - Run Terraform Free Form for Azure
         uses: libre-devops/terraform-free-form-azure@v1
         with:
-          terraform-code-location: "examples/module-development"
+          terraform-code-location: ${{ inputs.terraform-code-location }}
           terraform-commands-json: ${{ inputs.terraform-commands-json }}
           terraform-args-json: |
             {
